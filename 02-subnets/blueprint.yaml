@@ -1,0 +1,40 @@
+stack:
+  name: ${{ context.blueprint.name }}
+  space: $SPACE_ID
+  administrative: true
+  auto_deploy: true
+
+  description: |
+    This stack will create a simple VPC.
+    More resources will be added later.
+
+  labels: [aws, networking, labs]
+
+  vcs:
+    provider: RAW_GIT
+    repository_url: https://github.com/marcinwyszynski/spacelift-labs.git
+    branch: main
+    project_root: 02-subnets
+
+    # Irrelevant, just to keep the GUI happy.
+    repository: networking-labs
+    namespace: aws
+
+
+  vendor:
+    terraform:
+      manage_state: true
+      use_smart_sanitization: true
+      version: "1.5.0"
+
+  environment:
+    variables:
+      - name: TF_VAR_shared_context_id
+        value: $CONTEXT_ID
+  
+  attachments:
+    contexts:
+      - id: $CONTEXT_ID
+        priority: 1
+
+options: { trigger_run: true }

@@ -1,0 +1,47 @@
+inputs:
+  - id: aws_region
+    name: AWS region
+    type: select
+    options: [us-east-1, eu-west-1]
+    default: us-east-1
+  - id: aws_role_arn
+    name: ARN of the AWS role to assume
+
+stack:
+  name: ${{ context.blueprint.name }}
+  space: $SPACE_ID
+  administrative: true
+  auto_deploy: true
+
+  description: |
+    This stack will create a simple VPC.
+    More resources will be added later.
+
+  labels: [aws, networking, labs]
+
+  vcs:
+    provider: RAW_GIT
+    repository_url: https://github.com/marcinwyszynski/spacelift-labs.git
+    branch: main
+    project_root: 01-vpc
+
+    # Irrelevant, just to keep the GUI happy.
+    repository: networking-labs
+    namespace: aws
+
+  vendor:
+    terraform:
+      manage_state: true
+      use_smart_sanitization: true
+      version: "1.5.0"
+
+  environment:
+    variables:
+      - name: AWS_REGION
+        value: ${{ inputs.aws_region }}
+      - name: TF_VAR_aws_role_arn
+        value: ${{ inputs.aws_role_arn }}
+      - name: TF_VAR_shared_context_id
+        value: $CONTEXT_ID
+
+options: { trigger_run: true }
